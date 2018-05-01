@@ -187,10 +187,13 @@ data.db[0].data.posts.forEach(function(post) {
   if (post.page) {
     fileName = 'page-' + post.slug + '.md';
   }
+  
+  var doc = JSON.parse(post.mobiledoc);
 
   // File content.
   var fileContent = postTemplate({
-    post: post
+    post: post,
+    markdown: doc.cards[0][1].markdown,
   });
 
   // Get full path to the file we're going to write.
