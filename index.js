@@ -181,7 +181,9 @@ data.db[0].data.posts.forEach(function(post) {
 
   // Format the file name we're going to save.
   // Will be in the form of '2014-10-11-post-slug.md';
-  var fileName = post.formattedDate + '-' + post.slug + '.md';
+  // var fileName = post.formattedDate + '-' + post.slug + '.md';
+  var folderName = post.formattedDate.replace(/\-/g, '/') + '/' + post.slug;
+  var fileName = folderName + '/index.md';
 
   // If this entry is a page then rename the file name.
   if (post.page) {
@@ -199,6 +201,19 @@ data.db[0].data.posts.forEach(function(post) {
   // Get full path to the file we're going to write.
   var filePath = path.resolve(outputDirectoryPath, fileName);
 
+  // like writeFileSync but creates all folder paths if not exist
+  // ----------------------------------------------------------
+  function writeFileSyncRecursive(filename, content, charset) {
+    console.log(filename.split('\\'));
+    // create folder path if not exists
+    filename.split('\\').slice(0,-1).reduce( (last, folder)=>{
+      let folderPath = last ? (last + '/' + folder) : folder
+      if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath)
+      return folderPath
+    })
+    
+    fs.writeFileSync(filename, content, charset)
+  }
   // Write file.
-  fs.writeFileSync(filePath, fileContent, {encoding: 'utf8'});
+  writeFileSyncRecursive(filePath, fileContent, {encoding: 'utf8'});
 });
